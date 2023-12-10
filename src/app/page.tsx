@@ -1,10 +1,8 @@
 "use client"
 
-import { Button, ChatList, IChatItemProps, Input } from "react-chat-elements";
 import Markdown from "react-markdown"
 import { MonacoDiffEditor } from 'react-monaco-editor'
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
-import { createRef, useState } from "react";
 import Chat from "@/components/chat";
 
 
@@ -41,44 +39,10 @@ Iterations become a natural part of the creation process, with changes and refin
 
 
 export default function Home() {
-  const inputReference = createRef<HTMLInputElement>();
-  const [messages, setMessages] = useState<IChatItemProps[]>([
-    {
-      id: 1, // Added id property to satisfy IChatItemProps
-      avatar: 'https://via.placeholder.com/40',
-      alt: 'Reactjs',
-      title: 'Chat',
-      subtitle: '',
-      date: new Date(),
-      unread: 0,
-    },
-  ]);
-
-  const submitMessage = () => {
-    console.log("submit")
-    const inputValue = inputReference.current?.value || '';
-    if (inputReference.current) {
-      inputReference.current.value = '';
-    }
-    console.log(inputValue)
-    if (inputValue.trim()) {
-      const newMessage = {
-        id: messages.length + 1,
-        avatar: 'https://via.placeholder.com/40',
-        alt: 'Reactjs',
-        title: 'User',
-        subtitle: inputValue,
-        date: new Date(),
-        unread: 0,
-      };
-      setMessages([...messages, newMessage]);
-    }
-  };
-
   return (
     <main style={{ height: '100vh' }}>
       <PanelGroup direction="horizontal">
-        <Panel defaultSizePercentage={40} minSizePercentage={15}>
+        <Panel defaultSizePercentage={40} minSizePercentage={15} className="bg-gray-200">
           <div style={{ height: '100%', overflowY: 'auto' }}>
             <MonacoDiffEditor
               width="100%"
@@ -97,7 +61,7 @@ export default function Home() {
           </div>
         </Panel>
         <PanelResizeHandle className="mx-1 w-1 bg-slate-300" />
-        <Panel defaultSizePercentage={40} minSizePercentage={15}>
+        <Panel defaultSizePercentage={40} minSizePercentage={15} className="bg-gray-200">
           <div style={{ height: '100%', overflowY: 'auto' }}>
             <Markdown className={`markdown`}>
               {modifiedCode}
@@ -105,9 +69,9 @@ export default function Home() {
           </div>
         </Panel>
         <PanelResizeHandle className="mx-1 w-1 bg-slate-300" />
-        <Panel defaultSizePercentage={20} minSizePercentage={15}>
+        <Panel defaultSizePercentage={20} minSizePercentage={15} className="bg-gray-200">
           <div style={{ height: '100%', overflowY: 'auto' }}>
-            <Chat></Chat>
+            <Chat/>
           </div>
         </Panel>
       </PanelGroup>
