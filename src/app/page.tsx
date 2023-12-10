@@ -4,8 +4,8 @@ import { Button, ChatList, IChatItemProps, Input } from "react-chat-elements";
 import Markdown from "react-markdown"
 import { MonacoDiffEditor } from 'react-monaco-editor'
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
-import 'react-chat-elements/dist/main.css'
 import { createRef, useState } from "react";
+import Chat from "@/components/chat";
 
 
 const originalCode = `# Vision for a Text Sculpting Tool
@@ -28,8 +28,16 @@ My motivation stems from the struggle of traditional writing where I often find 
 I have always found that I communicate best in conversation, where ideas flow naturally and can be refined afterward.
 This revelation leads me to envision a tool that empowers me to build a document as if I were sculpting text.
 Through it, I can organically develop and refine my ideas, much as a sculptor works with clay, without being constrained by the linearity of traditional writing.
-`;
 
+## The Sculpting Process
+The process begins with a rough outline, a collection of thoughts and concepts that serve as the raw material for the document.
+As these ideas are placed on the canvas, they can be shaped, connected, and rearranged through an intuitive interface that responds to the creator's touch.
+This tactile approach to text manipulation allows for a more immersive and engaging writing experience, one that mirrors the fluidity of thought.
+
+## Collaboration and Iteration
+Moreover, the tool facilitates collaboration, enabling multiple sculptors to work on the same piece, each contributing their unique perspective and expertise.
+Iterations become a natural part of the creation process, with changes and refinements happening in real-time, allowing the document to evolve organically.
+`;
 
 
 export default function Home() {
@@ -62,11 +70,6 @@ export default function Home() {
         subtitle: inputValue,
         date: new Date(),
         unread: 0,
-        style: {
-          '--rce-citem-body-bottom-title-white-space': 'normal',
-          '--rce-citem-body-bottom-title-overflow': 'visible',
-          '--rce-citem-body-bottom-title-text-overflow': 'clip',
-        }
       };
       setMessages([...messages, newMessage]);
     }
@@ -76,24 +79,26 @@ export default function Home() {
     <main style={{ height: '100vh' }}>
       <PanelGroup direction="horizontal">
         <Panel defaultSizePercentage={40} minSizePercentage={15}>
-          <MonacoDiffEditor
-            width="100%"
-            height="100%"
-            language="markdown"
-            original={originalCode}
-            value={modifiedCode}
-            options={{
-              minimap: { enabled: false },
-              scrollbar: {
-                verticalScrollbarSize: 5,
-                horizontalScrollbarSize: 5
-              }
-            }}
-          />
+          <div style={{ height: '100%', overflowY: 'auto' }}>
+            <MonacoDiffEditor
+              width="100%"
+              height="100%"
+              language="markdown"
+              original={originalCode}
+              value={modifiedCode}
+              options={{
+                minimap: { enabled: false },
+                scrollbar: {
+                  verticalScrollbarSize: 5,
+                  horizontalScrollbarSize: 5
+                }
+              }}
+            />
+          </div>
         </Panel>
         <PanelResizeHandle className="mx-1 w-1 bg-slate-300" />
         <Panel defaultSizePercentage={40} minSizePercentage={15}>
-          <div style={{ overflow: 'auto' }}>
+          <div style={{ height: '100%', overflowY: 'auto' }}>
             <Markdown className={`markdown`}>
               {modifiedCode}
             </Markdown>
@@ -101,36 +106,8 @@ export default function Home() {
         </Panel>
         <PanelResizeHandle className="mx-1 w-1 bg-slate-300" />
         <Panel defaultSizePercentage={20} minSizePercentage={15}>
-          <div style={{ overflow: 'auto' }}>
-            <ChatList
-              className='chat-list'
-              id="chat-list-1"
-              lazyLoadingImage="https://via.placeholder.com/40"
-              dataSource={messages}
-            />
-            <Input
-              referance={inputReference}
-              placeholder='What do you think?'
-              multiline={true}
-              maxHeight={200}
-              minHeight={40}
-              onKeyPress={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  submitMessage()
-                }
-              }}
-              rightButtons={
-                <Button
-                  color='white'
-                  backgroundColor='black'
-                  text='Send'
-                  onClick={() => {
-                    submitMessage()
-                  }}
-                />
-              }
-            />
+          <div style={{ height: '100%', overflowY: 'auto' }}>
+            <Chat></Chat>
           </div>
         </Panel>
       </PanelGroup>
