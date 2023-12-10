@@ -3,29 +3,29 @@ import { getState } from '../lib/state'
 import { useState } from "react"
 
 
-const BotMessageBlock = (message: Message) => (
-    <div className="mx-auto bg-gray-200 p-1 md:w-full">
+const BotMessageBlock = (message: Message, index: number) => (
+    <div key={index} className="mx-auto bg-gray-200 p-1 md:w-full">
         <div className="flex flex-wrap items-start">
             <div className="p-1 w-full flex justify-between">
                 <div className="uppercase tracking-wide text-sm text-gray-700 font-semibold">{message.username}</div>
                 <div className="text-sm text-gray-500">{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
             <p className="p-1 text-gray-600 w-full">
-                <span title={message.timestamp.toLocaleString()}>{message.text}</span>
+                {message.text}
             </p>
         </div>
     </div>
 )
 
-const UserMessageBlock = (message: Message) => (
-    <div className="mx-auto bg-gray-100 p-1 md:w-full">
+const UserMessageBlock = (message: Message, index: number) => (
+    <div key={index} className="mx-auto bg-gray-100 p-1 md:w-full">
         <div className="flex flex-wrap items-start">
             <div className="p-1 w-full flex justify-between">
                 <div className="uppercase tracking-wide text-sm text-gray-700 font-semibold">{message.username}</div>
                 <div className="text-sm text-gray-500">{message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
             <p className="p-1 text-gray-600 w-full">
-                <span title={message.timestamp.toLocaleString()}>{message.text}</span>
+                {message.text}
             </p>
         </div>
     </div>
@@ -57,8 +57,8 @@ export default function Chat() {
         }
     }
 
-    const messageBlocks = messages.map((message: Message) =>
-        message.username === "bot" ? BotMessageBlock(message) : UserMessageBlock(message)
+    const messageBlocks = messages.map((message: Message, index: number) =>
+        message.username === "bot" ? BotMessageBlock(message, index) : UserMessageBlock(message, index)
     )
 
     return (
