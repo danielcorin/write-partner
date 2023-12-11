@@ -45,11 +45,16 @@ export const reducer = (state: any, action: any) => {
         ...state,
         messages: action.messages,
       }
-      case 'setDocument':
-        return {
-          ...state,
-          document: action.document,
-        }
+    case 'setDocument':
+      return {
+        ...state,
+        document: action.document,
+      }
+    case 'setProposedDocument':
+      return {
+        ...state,
+        proposedDocument: action.document,
+      }
     default:
       return state
   }
