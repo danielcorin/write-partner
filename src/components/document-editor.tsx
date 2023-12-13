@@ -1,8 +1,9 @@
 "use client"
 
-import { getState } from "@/lib/state";
+import { useStore } from "@/lib/state";
 import { DiffEditor, Editor, Monaco } from "@monaco-editor/react";
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import EditorControls from "./editor-controls";
 
 
 type EditorProps = {
@@ -12,7 +13,7 @@ type EditorProps = {
 const options = {
     renderSideBySide: false,
     wordWrap: "on" as "on",
-    scrollBeyondLastLine: false,
+    scrollBeyondLastLine: true,
     scrollbar: {
         verticalScrollbarSize: 7,
         horizontalScrollbarSize: 7,
@@ -54,7 +55,7 @@ const options = {
 
 const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
 
-    const [{ document, proposedDocument }, dispatch] = getState()
+    const [{ document, proposedDocument }, dispatch] = useStore()
 
     const updateProposedDocument = (document: string) => {
         dispatch({ type: 'setProposedDocument', document: document })
@@ -66,15 +67,13 @@ const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
 
     const handleDiffEditorDidMount = (editor: monaco.editor.IStandaloneDiffEditor, monaco: Monaco) => {
         const modifiedEditor = editor.getModifiedEditor();
-        modifiedEditor.onDidChangeModelContent((event) => {
-            console.log('Modified editor content changed!');
+        modifiedEditor.onDidChangeModelContent((_event) => {
             updateProposedDocument(modifiedEditor.getValue())
         });
     };
 
     const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
-        editor.onDidChangeModelContent((event) => {
-            console.log('Modified editor content changed!');
+        editor.onDidChangeModelContent((_event) => {
             updateDocument(editor.getValue())
         });
     };
@@ -118,12 +117,13 @@ const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
                 <div style={{ height: '100%', overflowY: 'auto' }}>
                     <Editor
                         width="100%"
-                        height="100%"
+                        height="97%"
                         language="markdown"
                         value={document}
                         options={options}
                         onMount={handleEditorDidMount}
                     />
+                    <EditorControls/>
                 </div>
             )}
         </>

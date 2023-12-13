@@ -36,7 +36,7 @@ StateProvider.propTypes = {
   reducer: PropTypes.func.isRequired
 };
 
-export const getState = () => useContext(StateContext);
+export const useStore = () => useContext(StateContext);
 
 export const reducer = (state: any, action: any) => {
   switch (action.type) {

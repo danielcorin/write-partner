@@ -3,12 +3,12 @@
 import Markdown from "react-markdown"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import Chat from "@/components/chat";
-import { getState } from '../lib/state'
+import { useStore } from '../lib/state'
 import DocumentEditor from "@/components/document-editor";
 
 
 export default function Home() {
-  const [{ proposedDocument, document }, _] = getState()
+  const [{ proposedDocument, document }, _] = useStore()
 
   return (
     <main style={{ height: '100vh' }}>

@@ -1,6 +1,8 @@
-import { getState } from '../lib/state'
-import { useState } from "react"
-import { useChat, Message } from 'ai/react';
+import { useStore } from '../lib/state'
+import dedent from 'dedent'
+import { useChat, Message } from 'ai/react'
+import { useRef, useState } from 'react'
+import AutoResizingTextarea from './auto-resizing-textarea'
 
 
 const BotMessageBlock = (message: Message, index: number) => (
@@ -33,13 +35,17 @@ const UserMessageBlock = (message: Message, index: number) => (
 
 export default function Chat() {
 
-    const [{ document }, dispatch] = getState()
+    const [{ document }, dispatch] = useStore()
     const { messages, input, handleInputChange, handleSubmit } = useChat({
         initialMessages: [
             {
                 id: "0",
                 role: "system",
-                content: "You are a thought partner to the user.\n\nYou will have a conversation with the user, asking thoughtful follow up questions about what they say. You will allow the user to steer the conversation in another direction if they choose.\n\nOnly provide feedback when asked. Focus on following up to help the user deepen the ideas they are exploring.",
+                content: dedent(`- You are a thought partner to the user
+                    - You will have a conversation with the user, asking thoughtful follow up questions about what they say.
+                    - You will allow the user to steer the conversation in another direction if they choose
+                    - Only provide feedback when asked
+                    - Focus on following up to help the user deepen the ideas they are exploring`),
             },
             {
                 id: "1",
@@ -50,31 +56,38 @@ export default function Chat() {
         onResponse: analyzeChat,
     })
 
+    const formRef = useRef(null)
+    const [loading, setLoading] = useState<boolean>(false)
 
     const setProposedDocument = (document: string) => {
         dispatch({ type: 'setProposedDocument', document });
     }
 
-    function analyzeChat(response: Response) {
-        console.log('Received:', response);
-        console.log(messages)
+    function analyzeChat(_response: Response) {
         const analysisMessages = [
             {
                 role: "system",
-                content: "Given the following working document and conversation, make _minor_ changes augment and restructure the document to capture the user's most recent ideas from the conversation. The content should be written from the perspective of the user. Preserve tone of the user's written voice but fix minor mistakes and typos where applicable. Write each sentence on a separate line to make it easier to see the difference between the old version and the modified version. Do not use code fences. Output the augmented document only.",
+                content: dedent(`- Given the working document provided by the user and conversation, make _minor_ changes augment and restructure the document to capture the user's most recent ideas from the conversation
+                    - Preserve tone of the user's written voice but fix minor mistakes and typos where applicable
+                    - Write each sentence on a separate line to make it easier to see the difference between the old version and the modified version
+                    - Do not use code fences
+                    - Output the augmented document only
+                    - The content should be written from the perspective of the user
+                    `),
             },
+            ...messages.slice(1).map(msg => ({
+                role: msg.role,
+                content: msg.content,
+            })),
             {
                 role: "user",
                 content: input,
             },
-        ]
-        if (document) {
-            analysisMessages.push({
+            {
                 role: "user",
-                content: `Here is the existing document:\n${document}`
-            })
-        }
-        console.log(analysisMessages)
+                content: document ? `Here is the existing document:\n${document}` : "The document is currently empty"
+            }
+        ]
         fetch('/api/chat', {
             method: 'POST',
             headers: {
@@ -84,6 +97,7 @@ export default function Chat() {
         })
         .then(response => response.text())
         .then(text => {
+            setLoading(false)
             setProposedDocument(text)
         })
         .catch(error => {
@@ -106,14 +120,16 @@ export default function Chat() {
             {messageBlocks}
             <div className="mx-auto bg-gray-300 p-1 md:w-full">
                 <div className="flex justify-between items-center">
-                    <form onSubmit={handleSubmit}>
-                        <input
-                            aria-label="Type your message here"
-                            className="w-full px-3 py-2 text-gray-700 focus:outline-none bg-gray-300"
-                            placeholder="Type your message here..."
-                            type="text"
-                            value={input}
-                            onChange={handleInputChange}
+                    <form ref={formRef} onSubmit={handleSubmit}>
+                        <AutoResizingTextarea
+                            formRef={formRef}
+                            handleSubmit={(e) => {
+                                setLoading(true)
+                                handleSubmit(e)
+                            }}
+                            input={input}
+                            handleInputChange={handleInputChange}
+                            loading={loading}
                         />
                     </form>
                 </div>
