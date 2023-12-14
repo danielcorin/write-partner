@@ -11,7 +11,7 @@ export default function Home() {
   const [{ proposedDocument, document }, _] = useStore()
 
   return (
-    <main style={{ height: '100vh' }}>
+    <main className="h-screen">
       <PanelGroup direction="horizontal">
         <Panel defaultSizePercentage={40} minSizePercentage={15} className="bg-gray-200">
           <DocumentEditor proposingChanges={proposedDocument !== ""}/>
@@ -26,7 +26,7 @@ export default function Home() {
         </Panel>
         <PanelResizeHandle className="mx-1 w-1 bg-slate-300" />
         <Panel defaultSizePercentage={20} minSizePercentage={15} className="bg-gray-200">
-          <div style={{ height: '100%', overflowY: 'auto' }}>
+          <div className="h-full overflow-y-auto">
             <Chat/>
           </div>
         </Panel>
