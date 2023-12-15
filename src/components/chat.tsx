@@ -134,21 +134,25 @@ export default function Chat() {
 
     return (
         <div>
-            {messageBlocks}
-            <div className="mx-auto bg-gray-300 p-1 md:w-full">
-                <div className="flex justify-between items-center">
-                    <form ref={formRef} onSubmit={handleSubmit}>
-                        <AutoResizingTextarea
-                            formRef={formRef}
-                            handleSubmit={(e) => {
-                                setLoading(true)
-                                handleSubmit(e)
-                            }}
-                            input={input}
-                            handleInputChange={handleInputChange}
-                            loading={loading}
-                        />
-                    </form>
+            <div className="flex flex-col justify-between h-full">
+                <div className="overflow-y-auto mb-16">
+                    {messageBlocks}
+                </div>
+                <div className="fixed bottom-0 mx-auto bg-gray-300 p-1 mt-6 md:w-full">
+                    <div className="flex justify-between items-center w-full">
+                        <form ref={formRef} onSubmit={handleSubmit}>
+                            <AutoResizingTextarea
+                                formRef={formRef}
+                                handleSubmit={(e) => {
+                                    setLoading(true)
+                                    handleSubmit(e)
+                                }}
+                                input={input}
+                                handleInputChange={handleInputChange}
+                                loading={loading}
+                            />
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
