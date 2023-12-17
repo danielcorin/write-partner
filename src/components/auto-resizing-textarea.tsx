@@ -1,3 +1,4 @@
+import { useStore } from '@/lib/state';
 import { Loader2 } from 'lucide-react';
 import React, { useEffect, useRef } from 'react'
 
@@ -10,6 +11,7 @@ type AutoResizingTextareaProps = {
 }
 
 const AutoResizingTextarea: React.FC<AutoResizingTextareaProps> = ({ formRef, handleSubmit, input, handleInputChange, loading }) => {
+    const [{ proposedDocument }, _] = useStore()
     const textareaRef = useRef<HTMLTextAreaElement>(null)
 
     useEffect(() => {
@@ -23,13 +25,19 @@ const AutoResizingTextarea: React.FC<AutoResizingTextareaProps> = ({ formRef, ha
     }, [input]) // Run the effect when the input value changes
 
 
+    let placeholder = "Type your message here..."
+    if (loading) {
+        placeholder = ""
+    } else if (proposedDocument !== "") {
+        placeholder = "Accept or reject changes"
+    }
     return (
         <div className="relative">
             <textarea
-                aria-label="Type your message here"
+                aria-label="Type your message here..."
                 ref={textareaRef}
                 className="w-full px-3 py-2 text-gray-700 focus:outline-none bg-gray-300 overflow-hidden resize-none"
-                placeholder={loading ? "" : "Type your message here..."}
+                placeholder={placeholder}
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
@@ -40,7 +48,7 @@ const AutoResizingTextarea: React.FC<AutoResizingTextareaProps> = ({ formRef, ha
                         }
                     }
                 }}
-                disabled={loading}
+                disabled={loading || proposedDocument !== ""}
             />
             {loading && (
                 <div className="absolute inset-0 flex justify-center items-center">

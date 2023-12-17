@@ -75,21 +75,23 @@ export default function Chat() {
     }
 
     function analyzeChat(_response: Response) {
-        let directives = ["You are a document editor"]
+        let directives = ["You are a document creator and editor"]
         if (document) {
-            directives.push("The follow messages contain a working document and conversation with a user and conversation")
-            directives.push("Make _minor_ changes augment and restructure the document to capture the user's most recent ideas from the conversation")
+            directives.push("Your job is to continuously synthesize a user's ideas into a document")
+            directives.push("Your top priority is to capture the ideas articulated by the user")
+            directives.push("The following messages contain a conversation with a user and a working document draft")
+            directives.push("Make _minor changes_ to the document to incorporate the user's most recent ideas")
         } else {
-            directives.push("Create an initial document, incorporating the user's thoughts")
+            directives.push("Create a short initial document, incorporating the user's thoughts")
         }
 
         directives = [...directives, ...[
             "Preserve tone of the user's written voice but fix minor mistakes and typos where applicable",
             "Write each sentence on a separate line to make it easier to see the difference between the old version and the modified version",
             "Write content from the perspective of the user",
-            "Add markdown structure to the document as needed",
-            "Output the augmented document only",
+            "Write the content in markdown",
             "Do not ask follow up questions",
+            "Output the augmented document only",
         ]]
 
         const conversationMessages = [
