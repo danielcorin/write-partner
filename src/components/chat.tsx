@@ -3,27 +3,20 @@ import dedent from 'dedent'
 import { useChat, Message } from 'ai/react'
 import { useEffect, useRef, useState } from 'react'
 import AutoResizingTextarea from './auto-resizing-textarea'
+import MessageControls from './message-controls'
 
-
-const BotMessageBlock = (message: Message, index: number) => (
-    <div key={index} className="mx-auto bg-gray-200 p-1 md:w-full">
+const MessageBlock = (message: Message, index: number, bgColorClass: string, removeMessage: () => void) => (
+    <div key={index} className={`mx-auto ${bgColorClass} p-1 md:w-full`}>
         <div className="flex flex-wrap items-start">
             <div className="p-1 w-full flex justify-between">
-                <div className="uppercase tracking-wide text-sm text-gray-700 font-semibold">{message.role}</div>
-                <div className="text-sm text-gray-500">{message.createdAt?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-            </div>
-            <div key={message.id} className="p-1 text-gray-600 w-full">
-                {message.content}
-            </div>
-        </div>
-    </div>
-)
-
-const UserMessageBlock = (message: Message, index: number) => (
-    <div key={index} className="mx-auto bg-gray-100 p-1 md:w-full">
-        <div className="flex flex-wrap items-start">
-            <div className="p-1 w-full flex justify-between">
-                <div className="uppercase tracking-wide text-sm text-gray-700 font-semibold">{message.role}</div>
+                <div className="flex items-center tracking-wide text-sm text-gray-700">
+                    <div className="uppercase font-semibold">
+                        {message.role}
+                    </div>
+                    <div className='ml-1'>
+                        <MessageControls message={message} removeMessage={removeMessage}/>
+                    </div>
+                </div>
                 <div className="text-sm text-gray-500">{message.createdAt?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
             <div key={message.id} className="p-1 text-gray-600 w-full">
@@ -34,18 +27,20 @@ const UserMessageBlock = (message: Message, index: number) => (
 )
 
 export default function Chat() {
-
     const [{ document }, dispatch] = useStore()
-    const { messages, input, handleInputChange, handleSubmit } = useChat({
+    const conversationDirectives = [
+        "You are a thought partner to the user",
+        "You will have a conversation with the user, asking thoughtful follow up questions about what they say",
+        "You will allow the user to steer the conversation in whatever direction they choose",
+        "Only provide feedback when asked",
+        "Focus on following up to help the user deepen and clarify the ideas they are exploring",
+    ]
+    const { messages, input, handleInputChange, handleSubmit, setMessages } = useChat({
         initialMessages: [
             {
                 id: "0",
                 role: "system",
-                content: dedent(`- You are a thought partner to the user
-                    - You will have a conversation with the user, asking thoughtful follow up questions about what they say.
-                    - You will allow the user to steer the conversation in another direction if they choose
-                    - Only provide feedback when asked
-                    - Focus on following up to help the user deepen the ideas they are exploring`),
+                content: conversationDirectives.map(directive => `- ${directive}`).join("\n"),
             },
             {
                 id: "1",
@@ -55,6 +50,10 @@ export default function Chat() {
         ],
         onResponse: analyzeChat,
     })
+
+    const removeMessageById = (idToRemove: string) => {
+        setMessages(messages.filter(message => message.id !== idToRemove));
+    }
 
     const analysisChat = useChat({
         onFinish: (_message: Message) => setLoading(false)
@@ -82,7 +81,7 @@ export default function Chat() {
             directives.push("The following messages contain a conversation with a user and a working document draft")
             directives.push("Make _minor changes_ to the document to incorporate the user's most recent ideas")
         } else {
-            directives.push("Create a short initial document, incorporating the user's thoughts")
+            directives.push("Create a very short initial paragraph as a start of a document, incorporating the user's thoughts")
         }
 
         directives = [...directives, ...[
@@ -121,16 +120,18 @@ export default function Chat() {
             })
         }
         analysisChat.setMessages(analysisMessages)
+        console.log(analysisMessages)
         analysisChat.reload()
     }
 
 
     const messageBlocks = messages.map((message: Message, index: number) => {
+        const removeMessage = () => removeMessageById(message.id)
         if (message.role === "user") {
-            return UserMessageBlock(message, index)
+            return MessageBlock(message, index, "bg-gray-200", removeMessage)
         }
         else if (message.role === "assistant") {
-            return BotMessageBlock(message, index)
+            return MessageBlock(message, index, "bg-gray-100", removeMessage)
         }
     }).filter(Boolean)
 
