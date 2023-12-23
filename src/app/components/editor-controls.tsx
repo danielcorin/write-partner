@@ -5,9 +5,10 @@ import {
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
-} from "@/components/ui/tooltip"
+} from "@/app/components/ui/tooltip"
 import { useStore } from '@/lib/state'
 
+const size: number = 20
 
 const downloadStringAsFile = (content: string, contentType: string) => {
     const filename = `document-${new Date().getTime()}.md`
@@ -37,10 +38,10 @@ const copyToClipboard = async (text: string) => {
 
 const EditorControls: React.FC = () => {
     const [iconState, setIconState] = useState({
-        copy: React.createElement(Copy),
-        download: React.createElement(Download),
-        history: React.createElement(History),
-        listTree: React.createElement(ListTree),
+        copy: React.createElement(Copy, { size: size }),
+        download: React.createElement(Download, { size: size }),
+        history: React.createElement(History, { size: size }),
+        listTree: React.createElement(ListTree, { size: size }),
     })
     const handleIconClick = async (iconKey: keyof typeof iconState) => {
         const curIcon = iconState[iconKey]
@@ -53,7 +54,7 @@ const EditorControls: React.FC = () => {
         }
         setIconState(prevState => ({
             ...prevState,
-            [iconKey]: React.createElement(Check, { color: 'green' })
+            [iconKey]: React.createElement(Check, { color: 'green', size })
         }))
         setTimeout(() => {
             setIconState(prevState => ({
@@ -130,6 +131,7 @@ const EditorControls: React.FC = () => {
                 <Tooltip>
                     <TooltipTrigger>
                         <Trash2
+                            size={size}
                             className="cursor-pointer"
                             onMouseOver={(e) => e.currentTarget.style.color = 'red'}
                             onMouseOut={(e) => e.currentTarget.style.color = 'inherit'}

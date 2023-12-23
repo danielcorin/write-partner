@@ -1,5 +1,4 @@
-import { useStore } from '../lib/state'
-import dedent from 'dedent'
+import { useStore } from '../../lib/state'
 import { useChat, Message } from 'ai/react'
 import { useEffect, useRef, useState } from 'react'
 import AutoResizingTextarea from './auto-resizing-textarea'
@@ -14,7 +13,7 @@ const MessageBlock = (message: Message, index: number, bgColorClass: string, rem
                         {message.role}
                     </div>
                     <div className='ml-1'>
-                        <MessageControls message={message} removeMessage={removeMessage}/>
+                        <MessageControls message={message} removeMessage={removeMessage} />
                     </div>
                 </div>
                 <div className="text-sm text-gray-500">{message.createdAt?.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
@@ -27,7 +26,7 @@ const MessageBlock = (message: Message, index: number, bgColorClass: string, rem
 )
 
 export default function Chat() {
-    const [{ document }, dispatch] = useStore()
+    const [{ document, proposedDocument, loadingResults }, dispatch] = useStore()
     const conversationDirectives = [
         "You are a thought partner to the user",
         "You will have a conversation with the user, asking thoughtful follow up questions about what they say",
@@ -55,8 +54,23 @@ export default function Chat() {
         setMessages(messages.filter(message => message.id !== idToRemove));
     }
 
+    const updateProposedDocument = (document: string) => {
+        dispatch({ type: 'setProposedDocument', document: document })
+    }
+
+    const updateDocument = (document: string) => {
+        dispatch({ type: 'setDocument', document: document })
+    }
+
+    const setLoading = (loading: boolean) => {
+        dispatch({ type: 'setLoadingResults', loadingResults: loading })
+    }
+
     const analysisChat = useChat({
-        onFinish: (_message: Message) => setLoading(false)
+        onFinish: (_message: Message) => {
+            setLoading(false)
+            setDecisioning(true)
+        }
     })
 
     useEffect(() => {
@@ -67,7 +81,7 @@ export default function Chat() {
 
 
     const formRef = useRef(null)
-    const [loading, setLoading] = useState<boolean>(false)
+    const [decisioning, setDecisioning] = useState<boolean>(false)
 
     const setProposedDocument = (document: string) => {
         dispatch({ type: 'setProposedDocument', document });
@@ -100,6 +114,7 @@ export default function Chat() {
                 content: input,
             },
         ]
+        const conversation = conversationMessages.slice(1).map(msg => `${msg.role}: ${msg.content}`).join('\n')
         const analysisMessages: Message[] = [
             {
                 id: "0",
@@ -109,7 +124,7 @@ export default function Chat() {
             {
                 id: "1",
                 role: "user",
-                content: conversationMessages.slice(1).map(msg => `${msg.role}: ${msg.content}`).join('\n'),
+                content: `Here is the conversation:\n${conversation}`,
             },
         ]
         if (document) {
@@ -120,7 +135,6 @@ export default function Chat() {
             })
         }
         analysisChat.setMessages(analysisMessages)
-        console.log(analysisMessages)
         analysisChat.reload()
     }
 
@@ -141,20 +155,46 @@ export default function Chat() {
                 <div className="overflow-y-auto mb-16">
                     {messageBlocks}
                 </div>
-                <div className="fixed bottom-0 mx-auto bg-gray-300 p-1 mt-6 md:w-full">
+                <div className="fixed bottom-0 mx-auto bg-gray-300 mt-6 md:w-full">
                     <div className="flex justify-between items-center w-full">
-                        <form ref={formRef} onSubmit={handleSubmit}>
-                            <AutoResizingTextarea
-                                formRef={formRef}
-                                handleSubmit={(e) => {
-                                    setLoading(true)
-                                    handleSubmit(e)
-                                }}
-                                input={input}
-                                handleInputChange={handleInputChange}
-                                loading={loading}
-                            />
-                        </form>
+                        {loadingResults || !decisioning ? (
+                            <form ref={formRef} onSubmit={handleSubmit}>
+                                <AutoResizingTextarea
+                                    formRef={formRef}
+                                    handleSubmit={(e) => {
+                                        setLoading(true)
+                                        handleSubmit(e)
+                                    }}
+                                    input={input}
+                                    handleInputChange={handleInputChange}
+                                    loading={loadingResults}
+                                />
+                            </form>
+                        ) : (
+                            <div className="py-2">
+                                <div className="flex justify-between">
+                                    <button
+                                        className="px-2 py-1 mr-1"
+                                        onClick={() => {
+                                            updateDocument(proposedDocument)
+                                            updateProposedDocument("")
+                                            setDecisioning(false)
+                                        }}
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        className="px-2 py-1 ml-1"
+                                        onClick={() => {
+                                            updateProposedDocument("")
+                                            setDecisioning(false)
+                                        }}
+                                    >
+                                        Reject
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

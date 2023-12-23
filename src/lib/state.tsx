@@ -55,17 +55,22 @@ export const reducer = (state: any, action: any) => {
         ...state,
         proposedDocument: action.document,
       }
+    case 'setLoadingResults':
+      return {
+        ...state,
+        loadingResults: action.loadingResults,
+      }
     default:
       return state
   }
 }
 
 const document: string = ``
-
 const proposedDocument = ``;
 
 export const initialState: ApplicationState = {
   messages: [] as Message[],
   document: document,
   proposedDocument: proposedDocument,
+  loadingResults: false,
 }

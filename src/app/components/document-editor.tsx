@@ -11,6 +11,7 @@ type EditorProps = {
 };
 
 const options = {
+    readOnly: true,
     renderSideBySide: false,
     wordWrap: "on" as "on",
     scrollBeyondLastLine: true,
@@ -51,7 +52,7 @@ const options = {
         showTypeParameters: false,
         showSnippets: false
     }
-}
+} as monaco.editor.IStandaloneEditorConstructionOptions
 
 const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
 
@@ -82,25 +83,6 @@ const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
         <>
             {proposingChanges ? (
                 <>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <button
-                            style={{ width: '49%', padding: '10px', marginRight: '1%' }}
-                            onClick={() => {
-                                updateDocument(proposedDocument)
-                                updateProposedDocument("")
-                            }}
-                        >
-                            Accept
-                        </button>
-                        <button
-                            style={{ width: '49%', padding: '10px', marginLeft: '1%' }}
-                            onClick={() => {
-                                updateProposedDocument("")
-                            }}
-                        >
-                            Reject
-                        </button>
-                    </div>
                     <div style={{ height: '100%', overflowY: 'auto' }}>
                         <DiffEditor
                             width="100%"
