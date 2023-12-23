@@ -49,7 +49,7 @@ export function Editor(): JSX.Element | null {
     const editorConfig = {
         // The editor theme
         theme: Theme,
-        namespace: "daily-standup-editor",
+        namespace: "write-partner-editor",
         // Handling of errors during update
         onError(error: unknown) {
             throw error;
@@ -79,7 +79,7 @@ export function Editor(): JSX.Element | null {
     };
 
     // When the editor changes, you can get notified via the
-    // LexicalOnChangePlugin!
+    // LexicalOnChangePlugin
     function onChange(editorState: EditorState) {
         const markdown: string = editorState.read(() => {
             return $convertToMarkdownString();
