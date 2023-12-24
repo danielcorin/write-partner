@@ -691,18 +691,38 @@ export default function ToolbarPlugin() {
           <button
             onClick={() => {
               downloadStringAsFile(editor.getEditorState().read(() => $convertToMarkdownString()), "text/markdown")
+              // Switch icon to check mark upon successful cloud-download
+              const cloudDownloadIcon = document.querySelector('.format.cloud-download');
+              if (cloudDownloadIcon) {
+                cloudDownloadIcon.className = 'format check';
+                // Switch it back to cloud-download icon after a second
+                setTimeout(() => {
+                  cloudDownloadIcon.className = 'format cloud-download';
+                }, 1100);
+              }
             }}
             className="toolbar-item spaced"
             aria-label="Download"
+            title="Download"
           >
             <i className="format cloud-download" />
           </button>
           <button
             onClick={async () => {
-              await copyToClipboard(editor.getEditorState().read(() => $convertToMarkdownString()))
+              await copyToClipboard(editor.getEditorState().read(() => $convertToMarkdownString()));
+              // Switch icon to check mark upon successful copy
+              const copyIcon = document.querySelector('.format.copy');
+              if (copyIcon) {
+                copyIcon.className = 'format check';
+                // Switch it back to copy icon after a second
+                setTimeout(() => {
+                  copyIcon.className = 'format copy';
+                }, 1100);
+              }
             }}
             className="toolbar-item spaced"
             aria-label="Copy"
+            title="Copy"
           >
             <i className="format copy" />
           </button>
@@ -712,6 +732,7 @@ export default function ToolbarPlugin() {
             }}
             className="toolbar-item"
             aria-label="History"
+            title="History"
           >
             <i className="format skip-backwards" />
           </button>
@@ -721,6 +742,7 @@ export default function ToolbarPlugin() {
             }}
             className="toolbar-item spaced"
             aria-label="Delete"
+            title="Delete"
           >
             <i className="format trash" />
           </button>{" "}

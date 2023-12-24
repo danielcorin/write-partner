@@ -754,7 +754,10 @@ i.skip-backwards {
   background-image: url(images/icons/skip-backwards.svg);
 }
 
-
 i.copy {
   background-image: url(images/icons/copy.svg);
+}
+
+i.check {
+  background-image: url(images/icons/check.svg);
 }
