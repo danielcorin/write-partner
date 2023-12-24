@@ -13,7 +13,8 @@ import {
   $getSelection,
   $isRangeSelection,
   $createParagraphNode,
-  $getNodeByKey
+  $getNodeByKey,
+  RangeSelection,
 } from "lexical";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
@@ -41,6 +42,11 @@ import {
   getDefaultCodeLanguage,
   getCodeLanguages
 } from "@lexical/code";
+import {
+  $convertToMarkdownString,
+  TRANSFORMERS
+} from "@lexical/markdown";
+
 
 const LowPriority = 1;
 
@@ -71,7 +77,7 @@ function Divider() {
   return <div className="divider" />;
 }
 
-function positionEditorElement(editor, rect) {
+function positionEditorElement(editor: any, rect: any) {
   if (rect === null) {
     editor.style.opacity = "0";
     editor.style.top = "-1000px";
@@ -85,13 +91,39 @@ function positionEditorElement(editor, rect) {
   }
 }
 
-function FloatingLinkEditor({ editor }) {
-  const editorRef = useRef(null);
-  const inputRef = useRef(null);
-  const mouseDownRef = useRef(false);
-  const [linkUrl, setLinkUrl] = useState("");
-  const [isEditMode, setEditMode] = useState(false);
-  const [lastSelection, setLastSelection] = useState(null);
+const downloadStringAsFile = (content: string, contentType: string) => {
+  const filename = `document-${new Date().getTime()}.md`
+  // Create a Blob from the content
+  const blob = new Blob([content], { type: contentType })
+  const url = window.URL.createObjectURL(blob)
+
+  // Create a link element
+  const downloadLink = document.createElement('a')
+
+  // Set the attributes and force triggering download
+  downloadLink.href = url
+  downloadLink.download = filename
+  downloadLink.click() // Simulate click to start download
+
+  // Clean up by revoking the Object URL
+  window.URL.revokeObjectURL(url)
+}
+
+const copyToClipboard = async (text: string) => {
+  if (navigator.clipboard) {
+      await navigator.clipboard.writeText(text)
+  } else {
+      console.error('Clipboard API not available.')
+  }
+}
+
+function FloatingLinkEditor({ editor }: any) {
+  const editorRef = useRef<any>(null);
+  const inputRef = useRef<any>(null);
+  const mouseDownRef = useRef<any>(false);
+  const [linkUrl, setLinkUrl] = useState<string>("");
+  const [isEditMode, setEditMode] = useState<boolean>(false);
+  const [lastSelection, setLastSelection] = useState<any>(null);
 
   const updateLinkEditor = useCallback(() => {
     const selection = $getSelection();
@@ -117,20 +149,20 @@ function FloatingLinkEditor({ editor }) {
     const rootElement = editor.getRootElement();
     if (
       selection !== null &&
-      !nativeSelection.isCollapsed &&
+      !nativeSelection?.isCollapsed &&
       rootElement !== null &&
-      rootElement.contains(nativeSelection.anchorNode)
+      rootElement.contains(nativeSelection?.anchorNode)
     ) {
-      const domRange = nativeSelection.getRangeAt(0);
+      const domRange = nativeSelection?.getRangeAt(0);
       let rect;
-      if (nativeSelection.anchorNode === rootElement) {
+      if (nativeSelection?.anchorNode === rootElement) {
         let inner = rootElement;
         while (inner.firstElementChild != null) {
           inner = inner.firstElementChild;
         }
         rect = inner.getBoundingClientRect();
       } else {
-        rect = domRange.getBoundingClientRect();
+        rect = domRange?.getBoundingClientRect();
       }
 
       if (!mouseDownRef.current) {
@@ -149,7 +181,7 @@ function FloatingLinkEditor({ editor }) {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
+      editor.registerUpdateListener(({ editorState }: any) => {
         editorState.read(() => {
           updateLinkEditor();
         });
@@ -225,11 +257,11 @@ function FloatingLinkEditor({ editor }) {
   );
 }
 
-function Select({ onChange, className, options, value }) {
+function Select({ onChange, className, options, value }: any) {
   return (
     <select className={className} onChange={onChange} value={value}>
       <option hidden={true} value="" />
-      {options.map((option) => (
+      {options.map((option: string) => (
         <option key={option} value={option}>
           {option}
         </option>
@@ -238,7 +270,7 @@ function Select({ onChange, className, options, value }) {
   );
 }
 
-function getSelectedNode(selection) {
+function getSelectedNode(selection: RangeSelection) {
   const anchor = selection.anchor;
   const focus = selection.focus;
   const anchorNode = selection.anchor.getNode();
@@ -259,8 +291,8 @@ function BlockOptionsDropdownList({
   blockType,
   toolbarRef,
   setShowBlockOptionsDropDown
-}) {
-  const dropDownRef = useRef(null);
+}: any) {
+  const dropDownRef = useRef<any>(null);
 
   useEffect(() => {
     const toolbar = toolbarRef.current;
@@ -278,7 +310,7 @@ function BlockOptionsDropdownList({
     const toolbar = toolbarRef.current;
 
     if (dropDown !== null && toolbar !== null) {
-      const handle = (event) => {
+      const handle = (event: any) => {
         const target = event.target;
 
         if (!dropDown.contains(target) && !toolbar.contains(target)) {
@@ -419,7 +451,7 @@ function BlockOptionsDropdownList({
 
 export default function ToolbarPlugin() {
   const [editor] = useLexicalComposerContext();
-  const toolbarRef = useRef(null);
+  const toolbarRef = useRef<any>(null);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [blockType, setBlockType] = useState("paragraph");
@@ -483,7 +515,7 @@ export default function ToolbarPlugin() {
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
+      editor.registerUpdateListener(({ editorState }: any) => {
         editorState.read(() => {
           updateToolbar();
         });
@@ -515,9 +547,9 @@ export default function ToolbarPlugin() {
     );
   }, [editor, updateToolbar]);
 
-  const codeLanguges = useMemo(() => getCodeLanguages(), []);
+  const codeLanguages = useMemo(() => getCodeLanguages(), []);
   const onCodeLanguageSelect = useCallback(
-    (e) => {
+    (e: any) => {
       editor.update(() => {
         if (selectedElementKey !== null) {
           const node = $getNodeByKey(selectedElementKey);
@@ -543,7 +575,7 @@ export default function ToolbarPlugin() {
       <button
         disabled={!canUndo}
         onClick={() => {
-          editor.dispatchCommand(UNDO_COMMAND);
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
         }}
         className="toolbar-item spaced"
         aria-label="Undo"
@@ -553,7 +585,7 @@ export default function ToolbarPlugin() {
       <button
         disabled={!canRedo}
         onClick={() => {
-          editor.dispatchCommand(REDO_COMMAND);
+          editor.dispatchCommand(REDO_COMMAND, undefined);
         }}
         className="toolbar-item"
         aria-label="Redo"
@@ -571,7 +603,7 @@ export default function ToolbarPlugin() {
             aria-label="Formatting Options"
           >
             <span className={"icon block-type " + blockType} />
-            <span className="text">{blockTypeToBlockName[blockType]}</span>
+            <span className="text">{blockTypeToBlockName[blockType as keyof typeof blockTypeToBlockName]}</span>
             <i className="chevron-down" />
           </button>
           {showBlockOptionsDropDown &&
@@ -592,7 +624,7 @@ export default function ToolbarPlugin() {
           <Select
             className="toolbar-item code-language"
             onChange={onCodeLanguageSelect}
-            options={codeLanguges}
+            options={codeLanguages}
             value={codeLanguage}
           />
           <i className="chevron-down inside" />
@@ -658,39 +690,39 @@ export default function ToolbarPlugin() {
           <Divider />
           <button
             onClick={() => {
-              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "left");
+              downloadStringAsFile(editor.getEditorState().read(() => $convertToMarkdownString()), "text/markdown")
             }}
             className="toolbar-item spaced"
-            aria-label="Left Align"
+            aria-label="Download"
           >
-            <i className="format left-align" />
+            <i className="format cloud-download" />
+          </button>
+          <button
+            onClick={async () => {
+              await copyToClipboard(editor.getEditorState().read(() => $convertToMarkdownString()))
+            }}
+            className="toolbar-item spaced"
+            aria-label="Copy"
+          >
+            <i className="format copy" />
           </button>
           <button
             onClick={() => {
-              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "center");
-            }}
-            className="toolbar-item spaced"
-            aria-label="Center Align"
-          >
-            <i className="format center-align" />
-          </button>
-          <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "right");
-            }}
-            className="toolbar-item spaced"
-            aria-label="Right Align"
-          >
-            <i className="format right-align" />
-          </button>
-          <button
-            onClick={() => {
-              editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, "justify");
+              console.log("history")
             }}
             className="toolbar-item"
-            aria-label="Justify Align"
+            aria-label="History"
           >
-            <i className="format justify-align" />
+            <i className="format skip-backwards" />
+          </button>
+          <button
+            onClick={() => {
+              console.log("delete")
+            }}
+            className="toolbar-item spaced"
+            aria-label="Delete"
+          >
+            <i className="format trash" />
           </button>{" "}
         </>
       )}
