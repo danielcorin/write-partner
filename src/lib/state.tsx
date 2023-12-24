@@ -4,6 +4,7 @@ import React, { createContext, useContext, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import { ApplicationState } from '@/types/state';
 import { Message } from '@/types/message'
+import { EMPTY_CHANGES } from '@/app/constants';
 
 export const StateContext = createContext<any>(null);
 
@@ -55,17 +56,34 @@ export const reducer = (state: any, action: any) => {
         ...state,
         proposedDocument: action.document,
       }
+    case 'setLoadingResults':
+      return {
+        ...state,
+        loadingResults: action.loadingResults,
+      }
+    case 'setRejectedDocumentHook':
+      return {
+        ...state,
+        rejectedDocumentHook: action.rejectedDocumentHook,
+      }
+    case 'setProposingChanges':
+      return {
+        ...state,
+        proposingChanges: action.proposingChanges,
+      }
     default:
       return state
   }
 }
 
 const document: string = ``
-
 const proposedDocument = ``;
 
 export const initialState: ApplicationState = {
   messages: [] as Message[],
   document: document,
   proposedDocument: proposedDocument,
+  loadingResults: false,
+  rejectedDocumentHook: EMPTY_CHANGES,
+  proposingChanges: false,
 }

@@ -5,12 +5,8 @@ import { DiffEditor, Editor, Monaco } from "@monaco-editor/react";
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import EditorControls from "./editor-controls";
 
-
-type EditorProps = {
-    proposingChanges: boolean;
-};
-
 const options = {
+    readOnly: true,
     renderSideBySide: false,
     wordWrap: "on" as "on",
     scrollBeyondLastLine: true,
@@ -51,30 +47,30 @@ const options = {
         showTypeParameters: false,
         showSnippets: false
     }
-}
+} as monaco.editor.IStandaloneEditorConstructionOptions
 
-const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
+const DocumentEditor: React.FC = () => {
 
-    const [{ document, proposedDocument }, dispatch] = useStore()
+    const [{ document, proposedDocument, proposingChanges }, dispatch] = useStore()
 
-    const updateProposedDocument = (document: string) => {
+    const setProposedDocument = (document: string) => {
         dispatch({ type: 'setProposedDocument', document: document })
     }
 
-    const updateDocument = (document: string) => {
+    const setDocument = (document: string) => {
         dispatch({ type: 'setDocument', document: document })
     }
 
     const handleDiffEditorDidMount = (editor: monaco.editor.IStandaloneDiffEditor, monaco: Monaco) => {
         const modifiedEditor = editor.getModifiedEditor();
         modifiedEditor.onDidChangeModelContent((_event) => {
-            updateProposedDocument(modifiedEditor.getValue())
+            setProposedDocument(modifiedEditor.getValue())
         });
     };
 
     const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editor.onDidChangeModelContent((_event) => {
-            updateDocument(editor.getValue())
+            setDocument(editor.getValue())
         });
     };
 
@@ -82,25 +78,6 @@ const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
         <>
             {proposingChanges ? (
                 <>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <button
-                            style={{ width: '49%', padding: '10px', marginRight: '1%' }}
-                            onClick={() => {
-                                updateDocument(proposedDocument)
-                                updateProposedDocument("")
-                            }}
-                        >
-                            Accept
-                        </button>
-                        <button
-                            style={{ width: '49%', padding: '10px', marginLeft: '1%' }}
-                            onClick={() => {
-                                updateProposedDocument("")
-                            }}
-                        >
-                            Reject
-                        </button>
-                    </div>
                     <div style={{ height: '100%', overflowY: 'auto' }}>
                         <DiffEditor
                             width="100%"
