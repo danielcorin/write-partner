@@ -741,3 +741,20 @@ i.right-align {
 i.justify-align {
   background-image: url(images/icons/justify.svg);
 }
+
+i.cloud-download {
+  background-image: url(images/icons/cloud-download.svg);
+}
+
+i.trash {
+  background-image: url(images/icons/trash.svg);
+}
+
+i.skip-backwards {
+  background-image: url(images/icons/skip-backwards.svg);
+}
+
+
+i.copy {
+  background-image: url(images/icons/copy.svg);
+}

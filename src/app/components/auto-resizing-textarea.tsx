@@ -39,6 +39,10 @@ const AutoResizingTextarea: React.FC<AutoResizingTextareaProps> = ({ formRef, ha
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={(e) => {
+                    if (e.key === 'Enter' && input.trim() === '') {
+                        e.preventDefault()
+                        return
+                    }
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
                         if (formRef.current) {

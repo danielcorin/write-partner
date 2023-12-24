@@ -3,7 +3,6 @@
 import { useStore } from "@/lib/state";
 import { DiffEditor, Editor, Monaco } from "@monaco-editor/react";
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import EditorControls from "./editor-controls";
 
 const options = {
     readOnly: true,
@@ -100,7 +99,6 @@ const DocumentEditor: React.FC = () => {
                         options={options}
                         onMount={handleEditorDidMount}
                     />
-                    <EditorControls/>
                 </div>
             )}
         </>

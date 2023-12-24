@@ -3,6 +3,7 @@ import { useChat, Message } from 'ai/react'
 import { useEffect, useRef, useState } from 'react'
 import AutoResizingTextarea from './auto-resizing-textarea'
 import MessageControls from './message-controls'
+import { EMPTY_CHANGES } from '../constants'
 
 const MessageBlock = (message: Message, index: number, bgColorClass: string, removeMessage: () => void) => (
     <div key={index} className={`mx-auto ${bgColorClass} p-1 md:w-full`}>
@@ -166,7 +167,7 @@ export default function Chat() {
                                     formRef={formRef}
                                     handleSubmit={(e) => {
                                         setLoading(true)
-                                        setRejectedDocumentHook("<empty>")
+                                        setRejectedDocumentHook(EMPTY_CHANGES)
                                         handleSubmit(e)
                                     }}
                                     input={input}
