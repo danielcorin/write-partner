@@ -1,6 +1,5 @@
 "use client"
 
-import Markdown from "react-markdown"
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import Chat from "@/app/components/chat";
 import { useStore } from '../lib/state'
@@ -9,21 +8,15 @@ import { Editor } from "@/app/components/rich-text-input";
 
 
 export default function Home() {
-  const [{ proposedDocument, document }, _] = useStore()
-
   return (
     <main className="h-screen">
       <PanelGroup direction="horizontal">
         <Panel defaultSizePercentage={37} minSizePercentage={15} className="bg-white">
-          <DocumentEditor proposingChanges={proposedDocument !== ""}/>
+          <DocumentEditor/>
         </Panel>
         <PanelResizeHandle className="mx-1 w-1 bg-slate-300" />
         <Panel defaultSizePercentage={43} minSizePercentage={15} className="bg-white">
           <div style={{ height: '100%', overflowY: 'auto' }}>
-            {/* <Markdown className={`markdown`}>
-              {proposedDocument || document}
-            </Markdown>
-             */}
              <Editor/>
           </div>
         </Panel>

@@ -5,11 +5,6 @@ import { DiffEditor, Editor, Monaco } from "@monaco-editor/react";
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import EditorControls from "./editor-controls";
 
-
-type EditorProps = {
-    proposingChanges: boolean;
-};
-
 const options = {
     readOnly: true,
     renderSideBySide: false,
@@ -54,28 +49,28 @@ const options = {
     }
 } as monaco.editor.IStandaloneEditorConstructionOptions
 
-const DocumentEditor: React.FC<EditorProps> = ({ proposingChanges }) => {
+const DocumentEditor: React.FC = () => {
 
-    const [{ document, proposedDocument }, dispatch] = useStore()
+    const [{ document, proposedDocument, proposingChanges }, dispatch] = useStore()
 
-    const updateProposedDocument = (document: string) => {
+    const setProposedDocument = (document: string) => {
         dispatch({ type: 'setProposedDocument', document: document })
     }
 
-    const updateDocument = (document: string) => {
+    const setDocument = (document: string) => {
         dispatch({ type: 'setDocument', document: document })
     }
 
     const handleDiffEditorDidMount = (editor: monaco.editor.IStandaloneDiffEditor, monaco: Monaco) => {
         const modifiedEditor = editor.getModifiedEditor();
         modifiedEditor.onDidChangeModelContent((_event) => {
-            updateProposedDocument(modifiedEditor.getValue())
+            setProposedDocument(modifiedEditor.getValue())
         });
     };
 
     const handleEditorDidMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editor.onDidChangeModelContent((_event) => {
-            updateDocument(editor.getValue())
+            setDocument(editor.getValue())
         });
     };
 

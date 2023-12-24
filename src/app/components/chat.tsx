@@ -26,7 +26,7 @@ const MessageBlock = (message: Message, index: number, bgColorClass: string, rem
 )
 
 export default function Chat() {
-    const [{ document, proposedDocument, loadingResults }, dispatch] = useStore()
+    const [{ document, proposedDocument, loadingResults, proposingChanges }, dispatch] = useStore()
     const conversationDirectives = [
         "You are a thought partner to the user",
         "You will have a conversation with the user, asking thoughtful follow up questions about what they say",
@@ -54,38 +54,41 @@ export default function Chat() {
         setMessages(messages.filter(message => message.id !== idToRemove));
     }
 
-    const updateProposedDocument = (document: string) => {
-        dispatch({ type: 'setProposedDocument', document: document })
+    const setDocument = (document: string) => {
+        dispatch({ type: 'setDocument', document: document })
     }
 
-    const updateDocument = (document: string) => {
-        dispatch({ type: 'setDocument', document: document })
+    const setProposedDocument = (document: string) => {
+        dispatch({ type: 'setProposedDocument', document });
     }
 
     const setLoading = (loading: boolean) => {
         dispatch({ type: 'setLoadingResults', loadingResults: loading })
     }
 
+    const setProposingChanges = (proposingChanges: boolean) => {
+        dispatch({ type: 'setProposingChanges', proposingChanges: proposingChanges })
+    }
+
+    const setRejectedDocumentHook = (document: string) => {
+        dispatch({ type: 'setRejectedDocumentHook', rejectedDocumentHook: document })
+    }
+
     const analysisChat = useChat({
         onFinish: (_message: Message) => {
             setLoading(false)
-            setDecisioning(true)
         }
     })
 
     useEffect(() => {
         if (analysisChat.messages.length > 0 && analysisChat.messages[analysisChat.messages.length - 1].role === 'assistant') {
+            setProposingChanges(true)
             setProposedDocument(analysisChat.messages[analysisChat.messages.length - 1].content)
         }
     }, [analysisChat.messages]);
 
 
     const formRef = useRef(null)
-    const [decisioning, setDecisioning] = useState<boolean>(false)
-
-    const setProposedDocument = (document: string) => {
-        dispatch({ type: 'setProposedDocument', document });
-    }
 
     function analyzeChat(_response: Response) {
         let directives = ["You are a document creator and editor"]
@@ -157,12 +160,13 @@ export default function Chat() {
                 </div>
                 <div className="fixed bottom-0 mx-auto bg-gray-300 mt-6 md:w-full">
                     <div className="flex justify-between items-center w-full">
-                        {loadingResults || !decisioning ? (
+                        {loadingResults || !proposingChanges ? (
                             <form ref={formRef} onSubmit={handleSubmit}>
                                 <AutoResizingTextarea
                                     formRef={formRef}
                                     handleSubmit={(e) => {
                                         setLoading(true)
+                                        setRejectedDocumentHook("<empty>")
                                         handleSubmit(e)
                                     }}
                                     input={input}
@@ -176,9 +180,9 @@ export default function Chat() {
                                     <button
                                         className="px-2 py-1 mr-1"
                                         onClick={() => {
-                                            updateDocument(proposedDocument)
-                                            updateProposedDocument("")
-                                            setDecisioning(false)
+                                            setProposingChanges(false)
+                                            setDocument(proposedDocument)
+                                            setProposedDocument("")
                                         }}
                                     >
                                         Accept
@@ -186,8 +190,8 @@ export default function Chat() {
                                     <button
                                         className="px-2 py-1 ml-1"
                                         onClick={() => {
-                                            updateProposedDocument("")
-                                            setDecisioning(false)
+                                            setProposingChanges(false)
+                                            setRejectedDocumentHook(document)
                                         }}
                                     >
                                         Reject

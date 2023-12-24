@@ -9,7 +9,6 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import {
-    $convertFromMarkdownString,
     $convertToMarkdownString,
     TRANSFORMERS
 } from "@lexical/markdown";

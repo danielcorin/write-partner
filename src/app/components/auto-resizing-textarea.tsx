@@ -11,7 +11,7 @@ type AutoResizingTextareaProps = {
 }
 
 const AutoResizingTextarea: React.FC<AutoResizingTextareaProps> = ({ formRef, handleSubmit, input, handleInputChange, loading }) => {
-    const [{ proposedDocument }, _] = useStore()
+    const [{ proposingChanges }, _] = useStore()
     const textareaRef = useRef<HTMLTextAreaElement>(null)
 
     useEffect(() => {
@@ -28,8 +28,6 @@ const AutoResizingTextarea: React.FC<AutoResizingTextareaProps> = ({ formRef, ha
     let placeholder = "Type your message here..."
     if (loading) {
         placeholder = ""
-    } else if (proposedDocument !== "") {
-        placeholder = "Accept or reject changes"
     }
     return (
         <div className="relative">
@@ -48,7 +46,7 @@ const AutoResizingTextarea: React.FC<AutoResizingTextareaProps> = ({ formRef, ha
                         }
                     }
                 }}
-                disabled={loading || proposedDocument !== ""}
+                disabled={loading || proposingChanges}
             />
             {loading && (
                 <div className="absolute inset-0 flex justify-center items-center">

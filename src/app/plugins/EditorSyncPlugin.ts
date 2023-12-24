@@ -7,6 +7,7 @@ import {
 } from "@lexical/markdown";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useEffect } from "react";
+import { EMPTY_CHANGES } from "../constants";
 
 type EditorSyncPluginProps = {
     transformers: Transformer[] | undefined;
@@ -16,7 +17,7 @@ type EditorSyncPluginProps = {
 export default function EditorSyncPlugin({ transformers }: EditorSyncPluginProps) {
     const [editor] = useLexicalComposerContext();
 
-    const [{ document, proposedDocument, loadingResults }, _] = useStore()
+    const [{ document, proposedDocument, loadingResults, rejectedDocumentHook }, _] = useStore()
 
     useEffect(() => {
         if (loadingResults) {
@@ -30,5 +31,13 @@ export default function EditorSyncPlugin({ transformers }: EditorSyncPluginProps
             });
         }
     }, [proposedDocument, document]);
+
+    useEffect(() => {
+        if (rejectedDocumentHook !== EMPTY_CHANGES) {
+            editor.update(() => {
+                $convertFromMarkdownString(rejectedDocumentHook, transformers);
+            });
+        }
+    }, [rejectedDocumentHook]);
     return null
 }
