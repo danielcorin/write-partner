@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { registerCodeHighlighting } from "@lexical/code";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
