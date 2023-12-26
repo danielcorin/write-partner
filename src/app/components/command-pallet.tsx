@@ -1,7 +1,7 @@
 import "react-cmdk/dist/cmdk.css";
 import CommandPalette, { filterItems, getItemIndex } from "react-cmdk";
 import { useEffect, useState } from "react";
-import { BsCopy, BsDownload, BsRobot  } from "react-icons/bs";
+import { BsCopy, BsDownload, BsRobot } from "react-icons/bs";
 import FileService from "../services/file-service";
 import ClipboardService from "../services/clipboard-service";
 import { useStore } from "@/lib/state";
@@ -9,7 +9,7 @@ import { useStore } from "@/lib/state";
 const CommandPallet = () => {
     const [page, setPage] = useState<"root" | "projects">("root");
     const [open, setOpen] = useState<boolean>(false);
-    const [ store, _ ] = useStore()
+    const [store, _] = useStore()
     useEffect(() => {
         function handleKeyDown(e: KeyboardEvent) {
             if (e.metaKey && e.key === "k") {
@@ -79,29 +79,22 @@ const CommandPallet = () => {
             onChangeOpen={setOpen}
             search={search}
             isOpen={open}
-            page={page}
         >
-            <CommandPalette.Page id="root">
-                {filteredItems.length ? (
-                    filteredItems.map((list) => (
-                        <CommandPalette.List key={list.id} heading={list.heading}>
-                            {list.items.map(({ id, ...rest }) => (
-                                <CommandPalette.ListItem
-                                    key={id}
-                                    index={getItemIndex(filteredItems, id)}
-                                    {...rest}
-                                />
-                            ))}
-                        </CommandPalette.List>
-                    ))
-                ) : (
-                    <CommandPalette.FreeSearchAction />
-                )}
-            </CommandPalette.Page>
-
-            <CommandPalette.Page id="projects">
-                {/* Projects page */}
-            </CommandPalette.Page>
+            {filteredItems.length ? (
+                filteredItems.map((list) => (
+                    <CommandPalette.List key={list.id} heading={list.heading}>
+                        {list.items.map(({ id, ...rest }) => (
+                            <CommandPalette.ListItem
+                                key={id}
+                                index={getItemIndex(filteredItems, id)}
+                                {...rest}
+                            />
+                        ))}
+                    </CommandPalette.List>
+                ))
+            ) : (
+                <CommandPalette.FreeSearchAction />
+            )}
         </CommandPalette>
     );
 };
