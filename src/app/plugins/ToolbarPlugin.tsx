@@ -46,6 +46,8 @@ import {
   $convertToMarkdownString,
   TRANSFORMERS
 } from "@lexical/markdown";
+import ClipboardService from "../services/clipboard-service";
+import FileService from "../services/file-service";
 
 
 const LowPriority = 1;
@@ -85,35 +87,8 @@ function positionEditorElement(editor: any, rect: any) {
   } else {
     editor.style.opacity = "1";
     editor.style.top = `${rect.top + rect.height + window.pageYOffset + 10}px`;
-    editor.style.left = `${
-      rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2
-    }px`;
-  }
-}
-
-const downloadStringAsFile = (content: string, contentType: string) => {
-  const filename = `document-${new Date().getTime()}.md`
-  // Create a Blob from the content
-  const blob = new Blob([content], { type: contentType })
-  const url = window.URL.createObjectURL(blob)
-
-  // Create a link element
-  const downloadLink = document.createElement('a')
-
-  // Set the attributes and force triggering download
-  downloadLink.href = url
-  downloadLink.download = filename
-  downloadLink.click() // Simulate click to start download
-
-  // Clean up by revoking the Object URL
-  window.URL.revokeObjectURL(url)
-}
-
-const copyToClipboard = async (text: string) => {
-  if (navigator.clipboard) {
-      await navigator.clipboard.writeText(text)
-  } else {
-      console.error('Clipboard API not available.')
+    editor.style.left = `${rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2
+      }px`;
   }
 }
 
@@ -690,14 +665,15 @@ export default function ToolbarPlugin() {
           <Divider />
           <button
             onClick={() => {
-              downloadStringAsFile(editor.getEditorState().read(() => $convertToMarkdownString()), "text/markdown")
+              FileService.downloadStringAsFile(
+                editor.getEditorState().read(() => $convertToMarkdownString()), "text/markdown")
               // Switch icon to check mark upon successful cloud-download
-              const cloudDownloadIcon = document.querySelector('.format.cloud-download');
+              const cloudDownloadIcon = document.querySelector('.format.download');
               if (cloudDownloadIcon) {
                 cloudDownloadIcon.className = 'format check';
-                // Switch it back to cloud-download icon after a second
+                // Switch it back to download icon after a second
                 setTimeout(() => {
-                  cloudDownloadIcon.className = 'format cloud-download';
+                  cloudDownloadIcon.className = 'format download';
                 }, 1100);
               }
             }}
@@ -705,11 +681,12 @@ export default function ToolbarPlugin() {
             aria-label="Download"
             title="Download"
           >
-            <i className="format cloud-download" />
+            <i className="format download" />
           </button>
           <button
             onClick={async () => {
-              await copyToClipboard(editor.getEditorState().read(() => $convertToMarkdownString()));
+              await ClipboardService.copyToClipboard(
+                editor.getEditorState().read(() => $convertToMarkdownString()));
               // Switch icon to check mark upon successful copy
               const copyIcon = document.querySelector('.format.copy');
               if (copyIcon) {

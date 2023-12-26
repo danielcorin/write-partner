@@ -2,9 +2,9 @@
 
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels"
 import Chat from "@/app/components/chat";
-import { useStore } from '../lib/state'
 import DocumentEditor from "@/app/components/document-editor";
 import { Editor } from "@/app/components/rich-text-input";
+import CommandPallet from "./components/command-pallet";
 
 
 export default function Home() {
@@ -27,6 +27,7 @@ export default function Home() {
           </div>
         </Panel>
       </PanelGroup>
+      <CommandPallet/>
     </main>
   )
 }
