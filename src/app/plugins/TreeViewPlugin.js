@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { TreeView } from "@lexical/react/LexicalTreeView";

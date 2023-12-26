@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 
@@ -8,17 +8,14 @@ import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
-import {
-    $convertToMarkdownString,
-    TRANSFORMERS
-} from "@lexical/markdown";
+import { $convertToMarkdownString, TRANSFORMERS } from "@lexical/markdown";
 
 /* Lexical Plugins Local */
 import TreeViewPlugin from "@/app/plugins/TreeViewPlugin";
 import ToolbarPlugin from "@/app/plugins/ToolbarPlugin";
 import AutoLinkPlugin from "@/app/plugins/AutoLinkPlugin";
 import CodeHighlightPlugin from "@/app/plugins/CodeHighlightPlugin";
-import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 
 /* Lexical Plugins Remote */
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -38,90 +35,90 @@ import { useStore } from "@/lib/state";
 import EditorSyncPlugin from "../plugins/EditorSyncPlugin";
 
 function Placeholder() {
-    return <div className="editor-placeholder"></div>;
+  return <div className="editor-placeholder"></div>;
 }
 
 export function Editor(): JSX.Element | null {
-    const [isMounted, setIsMounted] = useState(false)
-    const [{ document, proposedDocument }, dispatch] = useStore()
+  const [isMounted, setIsMounted] = useState(false);
+  const [{ document, proposedDocument }, dispatch] = useStore();
 
-    const editorConfig = {
-        // The editor theme
-        theme: Theme,
-        namespace: "write-partner-editor",
-        // Handling of errors during update
-        onError(error: unknown) {
-            throw error;
-        },
-        // Any custom nodes go here
-        nodes: [
-            HeadingNode,
-            ListNode,
-            ListItemNode,
-            QuoteNode,
-            CodeNode,
-            CodeHighlightNode,
-            TableNode,
-            TableCellNode,
-            TableRowNode,
-            AutoLinkNode,
-            LinkNode
-        ],
-    };
+  const editorConfig = {
+    // The editor theme
+    theme: Theme,
+    namespace: "write-partner-editor",
+    // Handling of errors during update
+    onError(error: unknown) {
+      throw error;
+    },
+    // Any custom nodes go here
+    nodes: [
+      HeadingNode,
+      ListNode,
+      ListItemNode,
+      QuoteNode,
+      CodeNode,
+      CodeHighlightNode,
+      TableNode,
+      TableCellNode,
+      TableRowNode,
+      AutoLinkNode,
+      LinkNode,
+    ],
+  };
 
-    const setProposedDocument = (proposedDoc: string) => {
-        dispatch({ type: 'setProposedDocument', document: proposedDoc });
-    };
+  const setProposedDocument = (proposedDoc: string) => {
+    dispatch({ type: "setProposedDocument", document: proposedDoc });
+  };
 
-    const setDocument = (doc: string) => {
-        dispatch({ type: 'setDocument', document: doc });
-    };
+  const setDocument = (doc: string) => {
+    dispatch({ type: "setDocument", document: doc });
+  };
 
-    // When the editor changes, you can get notified via the
-    // LexicalOnChangePlugin
-    function onChange(editorState: EditorState) {
-        const markdown: string = editorState.read(() => {
-            return $convertToMarkdownString();
-        });
-        if (proposedDocument) {
-            if (markdown !== proposedDocument) {
-                setProposedDocument(markdown)
-            }
-        } else {
-            if (markdown !== document) {
-                setDocument(markdown)
-            }
-        }
+  // When the editor changes, you can get notified via the
+  // LexicalOnChangePlugin
+  function onChange(editorState: EditorState) {
+    const markdown: string = editorState.read(() => {
+      return $convertToMarkdownString();
+    });
+    if (proposedDocument) {
+      if (markdown !== proposedDocument) {
+        setProposedDocument(markdown);
+      }
+    } else {
+      if (markdown !== document) {
+        setDocument(markdown);
+      }
     }
+  }
 
-    useEffect(() => {
-        setIsMounted(true);
-    }, [])
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-    if (!isMounted) return null
+  if (!isMounted) return null;
 
-    return (
-        <LexicalComposer initialConfig={editorConfig}>
-            <div className="editor-container">
-                <ToolbarPlugin />
-                <div className="editor-inner">
-                    <RichTextPlugin
-                        contentEditable={<ContentEditable className="editor-input" />}
-                        placeholder={<Placeholder />}
-                        ErrorBoundary={LexicalErrorBoundary}
-                    />
-                    <OnChangePlugin onChange={onChange} />
-                    <ListPlugin />
-                    <HistoryPlugin />
-                    <CodeHighlightPlugin />
-                    <LinkPlugin />
-                    <TabIndentationPlugin />
-                    <AutoLinkPlugin />
-                    <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-                    <EditorSyncPlugin transformers={TRANSFORMERS} />
-                    {/* <TreeViewPlugin /> */}
-                </div>
-            </div>
-        </LexicalComposer>
-    );
+  return (
+    <LexicalComposer initialConfig={editorConfig}>
+      <div className="editor-container">
+        <ToolbarPlugin />
+        <div className="editor-inner">
+          <RichTextPlugin
+            contentEditable={<ContentEditable className="editor-input" />}
+            placeholder={<Placeholder />}
+            ErrorBoundary={LexicalErrorBoundary}
+          />
+          <OnChangePlugin onChange={onChange} />
+          <ListPlugin />
+          <HistoryPlugin />
+          <CodeHighlightPlugin />
+          <LinkPlugin />
+          <TabIndentationPlugin />
+          <AutoLinkPlugin />
+          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+          <EditorSyncPlugin transformers={TRANSFORMERS} />
+          {/* <TreeViewPlugin /> */}
+        </div>
+      </div>
+    </LexicalComposer>
+  );
 }

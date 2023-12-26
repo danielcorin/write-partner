@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -20,7 +20,7 @@ import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   $isParentElementRTL,
   $wrapNodes,
-  $isAtNodeEnd
+  $isAtNodeEnd,
 } from "@lexical/selection";
 import { $getNearestNodeOfType, mergeRegister } from "@lexical/utils";
 import {
@@ -28,27 +28,23 @@ import {
   INSERT_UNORDERED_LIST_COMMAND,
   REMOVE_LIST_COMMAND,
   $isListNode,
-  ListNode
+  ListNode,
 } from "@lexical/list";
 import { createPortal } from "react-dom";
 import {
   $createHeadingNode,
   $createQuoteNode,
-  $isHeadingNode
+  $isHeadingNode,
 } from "@lexical/rich-text";
 import {
   $createCodeNode,
   $isCodeNode,
   getDefaultCodeLanguage,
-  getCodeLanguages
+  getCodeLanguages,
 } from "@lexical/code";
-import {
-  $convertToMarkdownString,
-  TRANSFORMERS
-} from "@lexical/markdown";
+import { $convertToMarkdownString, TRANSFORMERS } from "@lexical/markdown";
 import ClipboardService from "../services/clipboard-service";
 import FileService from "../services/file-service";
-
 
 const LowPriority = 1;
 
@@ -59,7 +55,7 @@ const supportedBlockTypes = new Set([
   "h1",
   "h2",
   "ul",
-  "ol"
+  "ol",
 ]);
 
 const blockTypeToBlockName = {
@@ -72,7 +68,7 @@ const blockTypeToBlockName = {
   ol: "Numbered List",
   paragraph: "Normal",
   quote: "Quote",
-  ul: "Bulleted List"
+  ul: "Bulleted List",
 };
 
 function Divider() {
@@ -87,8 +83,9 @@ function positionEditorElement(editor: any, rect: any) {
   } else {
     editor.style.opacity = "1";
     editor.style.top = `${rect.top + rect.height + window.pageYOffset + 10}px`;
-    editor.style.left = `${rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2
-      }px`;
+    editor.style.left = `${
+      rect.left + window.pageXOffset - editor.offsetWidth / 2 + rect.width / 2
+    }px`;
   }
 }
 
@@ -168,8 +165,8 @@ function FloatingLinkEditor({ editor }: any) {
           updateLinkEditor();
           return true;
         },
-        LowPriority
-      )
+        LowPriority,
+      ),
     );
   }, [editor, updateLinkEditor]);
 
@@ -265,7 +262,7 @@ function BlockOptionsDropdownList({
   editor,
   blockType,
   toolbarRef,
-  setShowBlockOptionsDropDown
+  setShowBlockOptionsDropDown,
 }: any) {
   const dropDownRef = useRef<any>(null);
 
@@ -431,9 +428,8 @@ export default function ToolbarPlugin() {
   const [canRedo, setCanRedo] = useState(false);
   const [blockType, setBlockType] = useState("paragraph");
   const [selectedElementKey, setSelectedElementKey] = useState(null);
-  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] = useState(
-    false
-  );
+  const [showBlockOptionsDropDown, setShowBlockOptionsDropDown] =
+    useState(false);
   const [codeLanguage, setCodeLanguage] = useState("");
   const [isRTL, setIsRTL] = useState(false);
   const [isLink, setIsLink] = useState(false);
@@ -501,7 +497,7 @@ export default function ToolbarPlugin() {
           updateToolbar();
           return false;
         },
-        LowPriority
+        LowPriority,
       ),
       editor.registerCommand(
         CAN_UNDO_COMMAND,
@@ -509,7 +505,7 @@ export default function ToolbarPlugin() {
           setCanUndo(payload);
           return false;
         },
-        LowPriority
+        LowPriority,
       ),
       editor.registerCommand(
         CAN_REDO_COMMAND,
@@ -517,8 +513,8 @@ export default function ToolbarPlugin() {
           setCanRedo(payload);
           return false;
         },
-        LowPriority
-      )
+        LowPriority,
+      ),
     );
   }, [editor, updateToolbar]);
 
@@ -534,7 +530,7 @@ export default function ToolbarPlugin() {
         }
       });
     },
-    [editor, selectedElementKey]
+    [editor, selectedElementKey],
   );
 
   const insertLink = useCallback(() => {
@@ -578,7 +574,13 @@ export default function ToolbarPlugin() {
             aria-label="Formatting Options"
           >
             <span className={"icon block-type " + blockType} />
-            <span className="text">{blockTypeToBlockName[blockType as keyof typeof blockTypeToBlockName]}</span>
+            <span className="text">
+              {
+                blockTypeToBlockName[
+                  blockType as keyof typeof blockTypeToBlockName
+                ]
+              }
+            </span>
             <i className="chevron-down" />
           </button>
           {showBlockOptionsDropDown &&
@@ -589,7 +591,7 @@ export default function ToolbarPlugin() {
                 toolbarRef={toolbarRef}
                 setShowBlockOptionsDropDown={setShowBlockOptionsDropDown}
               />,
-              document.body
+              document.body,
             )}
           <Divider />
         </>
@@ -666,14 +668,17 @@ export default function ToolbarPlugin() {
           <button
             onClick={() => {
               FileService.downloadStringAsFile(
-                editor.getEditorState().read(() => $convertToMarkdownString()), "text/markdown")
+                editor.getEditorState().read(() => $convertToMarkdownString()),
+                "text/markdown",
+              );
               // Switch icon to check mark upon successful cloud-download
-              const cloudDownloadIcon = document.querySelector('.format.download');
+              const cloudDownloadIcon =
+                document.querySelector(".format.download");
               if (cloudDownloadIcon) {
-                cloudDownloadIcon.className = 'format check';
+                cloudDownloadIcon.className = "format check";
                 // Switch it back to download icon after a second
                 setTimeout(() => {
-                  cloudDownloadIcon.className = 'format download';
+                  cloudDownloadIcon.className = "format download";
                 }, 1100);
               }
             }}
@@ -686,14 +691,15 @@ export default function ToolbarPlugin() {
           <button
             onClick={async () => {
               await ClipboardService.copyToClipboard(
-                editor.getEditorState().read(() => $convertToMarkdownString()));
+                editor.getEditorState().read(() => $convertToMarkdownString()),
+              );
               // Switch icon to check mark upon successful copy
-              const copyIcon = document.querySelector('.format.copy');
+              const copyIcon = document.querySelector(".format.copy");
               if (copyIcon) {
-                copyIcon.className = 'format check';
+                copyIcon.className = "format check";
                 // Switch it back to copy icon after a second
                 setTimeout(() => {
-                  copyIcon.className = 'format copy';
+                  copyIcon.className = "format copy";
                 }, 1100);
               }
             }}
@@ -705,7 +711,7 @@ export default function ToolbarPlugin() {
           </button>
           <button
             onClick={() => {
-              console.log("history")
+              console.log("history");
             }}
             className="toolbar-item"
             aria-label="History"
@@ -715,7 +721,7 @@ export default function ToolbarPlugin() {
           </button>
           <button
             onClick={() => {
-              console.log("delete")
+              console.log("delete");
             }}
             className="toolbar-item spaced"
             aria-label="Delete"
