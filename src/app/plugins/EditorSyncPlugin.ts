@@ -30,7 +30,7 @@ export default function EditorSyncPlugin({ transformers }: EditorSyncPluginProps
                 }
             });
         }
-    }, [proposedDocument, document]);
+    }, [editor, proposedDocument, document, loadingResults, transformers]);
 
     useEffect(() => {
         if (rejectedDocumentHook !== EMPTY_CHANGES) {
@@ -38,6 +38,6 @@ export default function EditorSyncPlugin({ transformers }: EditorSyncPluginProps
                 $convertFromMarkdownString(rejectedDocumentHook, transformers);
             });
         }
-    }, [rejectedDocumentHook]);
+    }, [editor, rejectedDocumentHook, transformers]);
     return null
 }

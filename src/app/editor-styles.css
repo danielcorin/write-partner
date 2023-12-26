@@ -746,6 +746,10 @@ i.cloud-download {
   background-image: url(images/icons/cloud-download.svg);
 }
 
+i.download {
+  background-image: url(images/icons/download.svg);
+}
+
 i.trash {
   background-image: url(images/icons/trash.svg);
 }

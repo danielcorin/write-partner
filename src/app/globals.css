@@ -102,3 +102,8 @@ body {
 .markdown > * {
   all: revert;
 }
+
+/* prevent Monaco scrollbar from sitting on top of modal */
+.monaco-editor .overflow-guard  {
+  z-index: 1;
+}
