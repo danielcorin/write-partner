@@ -1,6 +1,6 @@
 import { useStore } from '../../lib/state'
 import { useChat, Message } from 'ai/react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import AutoResizingTextarea from './auto-resizing-textarea'
 import MessageControls from './message-controls'
 import { EMPTY_CHANGES } from '../constants'
@@ -51,29 +51,29 @@ export default function Chat() {
         onResponse: analyzeChat,
     })
 
-    const removeMessageById = (idToRemove: string) => {
+    const removeMessageById = useCallback((idToRemove: string) => {
         setMessages(messages.filter(message => message.id !== idToRemove));
-    }
+    }, [messages, setMessages]);
 
-    const setDocument = (document: string) => {
+    const setDocument = useCallback((document: string) => {
         dispatch({ type: 'setDocument', document: document })
-    }
+    }, [dispatch]);
 
-    const setProposedDocument = (document: string) => {
+    const setProposedDocument = useCallback((document: string) => {
         dispatch({ type: 'setProposedDocument', document });
-    }
+    }, [dispatch]);
 
-    const setLoading = (loading: boolean) => {
+    const setLoading = useCallback((loading: boolean) => {
         dispatch({ type: 'setLoadingResults', loadingResults: loading })
-    }
+    }, [dispatch]);
 
-    const setProposingChanges = (proposingChanges: boolean) => {
+    const setProposingChanges = useCallback((proposingChanges: boolean) => {
         dispatch({ type: 'setProposingChanges', proposingChanges: proposingChanges })
-    }
+    }, [dispatch]);
 
-    const setRejectedDocumentHook = (document: string) => {
+    const setRejectedDocumentHook = useCallback((document: string) => {
         dispatch({ type: 'setRejectedDocumentHook', rejectedDocumentHook: document })
-    }
+    }, [dispatch]);
 
     const analysisChat = useChat({
         onFinish: (_message: Message) => {
@@ -86,7 +86,7 @@ export default function Chat() {
             setProposingChanges(true)
             setProposedDocument(analysisChat.messages[analysisChat.messages.length - 1].content)
         }
-    }, [analysisChat.messages]);
+    }, [analysisChat.messages, setProposedDocument, setProposingChanges]);
 
 
     const formRef = useRef(null)
