@@ -34,9 +34,9 @@ export default function EditorSyncPlugin({
   }, [editor, proposedDocument, document, loadingResults, transformers]);
 
   useEffect(() => {
-    if (rejectedDocumentHook !== EMPTY_CHANGES) {
+    if (rejectedDocumentHook.content !== EMPTY_CHANGES) {
       editor.update(() => {
-        $convertFromMarkdownString(rejectedDocumentHook, transformers);
+        $convertFromMarkdownString(rejectedDocumentHook.content, transformers);
       });
     }
   }, [editor, rejectedDocumentHook, transformers]);

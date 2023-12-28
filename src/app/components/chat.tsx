@@ -46,7 +46,7 @@ export default function Chat() {
     "Only provide feedback when asked",
     "Focus on following up to help the user deepen and clarify the ideas they are exploring",
   ];
-  const { messages, input, handleInputChange, handleSubmit, setMessages } =
+  const { messages, input, handleInputChange, handleSubmit, setMessages, reload } =
     useChat({
       initialMessages: [
         {
@@ -107,7 +107,10 @@ export default function Chat() {
     (document: string) => {
       dispatch({
         type: "setRejectedDocumentHook",
-        rejectedDocumentHook: document,
+        rejectedDocumentHook: {
+            content: document,
+            timestamp: Date.now(),
+        }
       });
     },
     [dispatch],
@@ -243,7 +246,19 @@ export default function Chat() {
                       setProposedDocument("");
                     }}
                   >
-                    Accept
+                    Keep
+                  </button>
+                  <button
+                    className="px-2 py-1 ml-1"
+                    onClick={() => {
+                      setProposingChanges(false);
+                      setRejectedDocumentHook(document);
+                      setLoading(true);
+                      analysisChat.setMessages(analysisChat.messages.slice(0, -1));
+                      analysisChat.reload();
+                    }}
+                  >
+                    Regenerate
                   </button>
                   <button
                     className="px-2 py-1 ml-1"
@@ -252,7 +267,7 @@ export default function Chat() {
                       setRejectedDocumentHook(document);
                     }}
                   >
-                    Reject
+                    Pass
                   </button>
                 </div>
               </div>

@@ -79,11 +79,15 @@ export const reducer = (state: any, action: any) => {
 const document: string = ``;
 const proposedDocument = ``;
 
+
 export const initialState: ApplicationState = {
   messages: [] as Message[],
   document: document,
   proposedDocument: proposedDocument,
   loadingResults: false,
-  rejectedDocumentHook: EMPTY_CHANGES,
+  rejectedDocumentHook: {
+    content: EMPTY_CHANGES,
+    timestamp: 0,
+  },
   proposingChanges: false,
 };
