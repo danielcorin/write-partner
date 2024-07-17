@@ -58,6 +58,11 @@ export default function Chat() {
         },
         {
           id: "1",
+          role: "user",
+          content: "Hi!",
+        },
+        {
+          id: "2",
           role: "assistant",
           content: "What would you like to write about?",
         },
